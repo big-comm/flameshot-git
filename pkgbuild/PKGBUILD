@@ -8,7 +8,6 @@ pkgname=flameshot-git
 pkgdesc="Powerful yet simple to use screenshot software"
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
-pkgrel=1
 arch=('i686' 'x86_64')
 license=('GPL')
 url="https://github.com/flameshot-org/flameshot"

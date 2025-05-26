@@ -14,7 +14,7 @@ license=('GPL')
 url="https://github.com/flameshot-org/flameshot"
 
 # Flameshot specific dependencies
-depends=(qt5-base hicolor-icon-theme qt5-svg kguiaddons5)
+depends=(qt5-base hicolor-icon-theme qt5-svg kguiaddons5 qt5-wayland)
 makedepends=(qt5-tools git cmake)
 optdepends=('xdg-desktop-portal: To make Sway, Hyprland, and wlroots work'
             'xdg-desktop-portal-wlr: To make Sway, Hyprland, and wlroots work'

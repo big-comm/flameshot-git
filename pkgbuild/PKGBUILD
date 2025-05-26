@@ -1,20 +1,28 @@
 # Maintainer: Tales A. Mendonça <talesam@gmail.com>
+# Original Maintainer: Jeremy Borgman 
+# Original Maintainer: Mehrad Mahmoudian 
+# Original Contributor: Feresey 
+# Original Contributor: j1simon 
 
-pkgname=pkgbuild-template
-pkgdesc="Package template for Communitybig"
-# Uncomment and edit the following lines as needed
-#depends=('')
-#makedepends=('')
-#optdepends=('')
-#conflicts=('')
-#provides=('')
-#replaces=('')
+pkgname=flameshot-git
+pkgdesc="Powerful yet simple to use screenshot software"
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
-arch=('any')
-license=('MIT')
-url="https://github.com/big-comm/${pkgname}"
-source=("git+${url}.git")
+arch=('i686' 'x86_64')
+license=('GPL')
+url="https://github.com/flameshot-org/flameshot"
+
+# Flameshot specific dependencies
+depends=(qt5-base hicolor-icon-theme qt5-svg kguiaddons5 qt5-wayland)
+makedepends=(qt5-tools git cmake)
+optdepends=('xdg-desktop-portal: To make Sway, Hyprland, and wlroots work'
+            'xdg-desktop-portal-wlr: To make Sway, Hyprland, and wlroots work'
+            'grim: To make Sway, Hyprland, and wlroots work'
+            'xdg-desktop-portal-kde: For KDE Plasma')
+provides=(flameshot)
+conflicts=(flameshot)
+
+source=("git+https://github.com/flameshot-org/flameshot.git")
 md5sums=('SKIP')
 
 # Automatically detect and use the correct install file
@@ -24,49 +32,65 @@ elif [ -e "pkgbuild.install" ]; then
     install=pkgbuild.install
 fi
 
+# Get version from git
+pkgver() {
+    cd "${srcdir}/flameshot"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
 prepare() {
-    cd "${srcdir}/${pkgname}"
+    cd "${srcdir}/flameshot"
     # Add any preparation steps here, if needed
     # For example: patch -p1 < "${srcdir}/patch-file.patch"
 }
 
 build() {
-    cd "${srcdir}/${pkgname}"
-    # Add build steps here, if needed
-    # For example: make
+    cd "${srcdir}/flameshot"
+    
+    # Flameshot specific cmake build
+    cmake -S ./ \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DUSE_WAYLAND_CLIPBOARD=1 \
+        -DUSE_WAYLAND_GRIM=true
+
+    make -j$(nproc --ignore 1)
 }
 
 check() {
-    cd "${srcdir}/${pkgname}"
+    cd "${srcdir}/flameshot"
     # Add check/test steps here, if needed
     # For example: make check
 }
 
 package() {
-    cd "${srcdir}/${pkgname}"
+    cd "${srcdir}/flameshot"
 
-    # Determine the correct source directory
-    if [ -d "${pkgname}" ]; then
-        srcdir="${srcdir}/${pkgname}/${pkgname}"
+    # Flameshot specific install
+    make DESTDIR="${pkgdir}" install
+
+    # Determine the correct source directory (maintaining template logic)
+    local actual_srcdir
+    if [ -d "${srcdir}/flameshot/flameshot" ]; then
+        actual_srcdir="${srcdir}/flameshot/flameshot"
     else
-        srcdir="${srcdir}/${pkgname}"
+        actual_srcdir="${srcdir}/flameshot"
     fi
 
-    # Install files
+    # Install additional files from template logic
     local dirs=("usr" "etc" "opt")
     for dir in "${dirs[@]}"; do
-        if [ -d "${srcdir}/${dir}" ]; then
-            cp -a "${srcdir}/${dir}" "${pkgdir}/"
+        if [ -d "${actual_srcdir}/${dir}" ]; then
+            cp -a "${actual_srcdir}/${dir}" "${pkgdir}/"
         fi
     done
 
-    # Install license file if present
-    if [ -f "LICENSE" ]; then
-        install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    # Install license file if present (template logic)
+    if [ -f "${actual_srcdir}/LICENSE" ]; then
+        install -Dm644 "${actual_srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
     fi
 
-    # Install documentation if present
-    if [ -f "README.md" ]; then
-        install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+    # Install documentation if present (template logic)
+    if [ -f "${actual_srcdir}/README.md" ]; then
+        install -Dm644 "${actual_srcdir}/README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
     fi
 }

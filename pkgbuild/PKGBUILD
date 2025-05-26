@@ -22,7 +22,7 @@ optdepends=('xdg-desktop-portal: To make Sway, Hyprland, and wlroots work'
 provides=(flameshot)
 conflicts=(flameshot)
 
-source=("git+https://github.com/flameshot-org/flameshot.git")
+source=("git+https://github.com/flameshot-org/flameshot.git#branch=master")
 md5sums=('SKIP')
 
 # Automatically detect and use the correct install file

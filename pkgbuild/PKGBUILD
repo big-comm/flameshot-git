@@ -8,12 +8,13 @@ pkgname=flameshot-git
 pkgdesc="Powerful yet simple to use screenshot software"
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
+pkgrel=1
 arch=('i686' 'x86_64')
 license=('GPL')
 url="https://github.com/flameshot-org/flameshot"
 
 # Flameshot specific dependencies
-depends=(qt5-base hicolor-icon-theme qt5-svg kguiaddons5 qt5-wayland)
+depends=(qt5-base hicolor-icon-theme qt5-svg kguiaddons5)
 makedepends=(qt5-tools git cmake)
 optdepends=('xdg-desktop-portal: To make Sway, Hyprland, and wlroots work'
             'xdg-desktop-portal-wlr: To make Sway, Hyprland, and wlroots work'
@@ -31,12 +32,6 @@ if [ -e "${pkgname}.install" ]; then
 elif [ -e "pkgbuild.install" ]; then
     install=pkgbuild.install
 fi
-
-# Get version from git
-pkgver() {
-    cd "${srcdir}/flameshot"
-    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
-}
 
 prepare() {
     cd "${srcdir}/flameshot"
